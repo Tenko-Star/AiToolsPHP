@@ -14,9 +14,9 @@ interface AiServiceInterface
      * @throws AiResponseException
      * @return mixed
      */
-    public function chat(array $params);
+    public function chat(array $params, ?int $groupId = null);
 
-    public function chatStream(array $params);
+    public function chatStream(array $params, ?int $groupId = null);
 
     public function getContextNum();
 

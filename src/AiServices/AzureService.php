@@ -45,7 +45,7 @@ class AzureService implements AiServiceInterface
         $this->apiVersion = $config->getOrFail('azure_api_version');
         $this->apiKey = $keyHelper->getKey();
         $this->model = $config->getOrFail('model');
-        $this->maxSession = $config->getOrFail('max_tokens');
+        $this->maxSession = $config->getOrFail('context_num');
         $this->isSensitive = $config->get('is_sensitive', 1);
     }
 
@@ -57,7 +57,7 @@ class AzureService implements AiServiceInterface
     /**
      * @inheritDoc
      */
-    public function chat(array $params): array
+    public function chat(array $params, ?int $groupId = null): array
     {
         $api = '/deployments/{Deployments}/chat/completions?api-version={ApiVersion}';
 
@@ -115,13 +115,7 @@ class AzureService implements AiServiceInterface
             return strlen($data);
         };
 
-        if ($groupId) {
-            echo 'data: ' . json_encode(['group_id' => $groupId]);
-            ob_flush();
-            flush();
-        }
-
-        GptHelper::requestByStream($callback, [
+        $options = [
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_SSL_VERIFYPEER => false,
@@ -139,7 +133,18 @@ class AzureService implements AiServiceInterface
                 'stream' => true,
                 'temperature' => $this->temperature,
             ])
-        ]);
+        ];
+
+        $preHandler = null;
+        if ($groupId) {
+            $preHandler = function () use ($groupId) {
+                echo 'data: ' . json_encode(['group_id' => $groupId]);
+                ob_flush();
+                flush();
+            };
+        }
+
+        GptHelper::requestByStream($callback, $options, $preHandler);
 
 
         if (true !== $response) {

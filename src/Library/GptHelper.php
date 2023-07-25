@@ -4,7 +4,7 @@ namespace Tenko\Ai\Library;
 
 class GptHelper
 {
-    public static function requestByStream(callable $callback, array $curlOptions = []) {
+    public static function requestByStream(callable $callback, array $curlOptions = [], callable $preHandler = null) {
         header("Access-Control-Allow-Origin: *");
         header("Content-Type: text/event-stream");
         header("Cache-Control: no-cache");
@@ -15,6 +15,11 @@ class GptHelper
             curl_setopt($ch, $curlKey, $curlOption);
         }
         curl_setopt($ch, CURLOPT_WRITEFUNCTION, $callback);
+
+        if ($preHandler) {
+            $preHandler();
+        }
+
         curl_exec($ch);
     }
 

@@ -49,8 +49,8 @@ class OpenAiService implements AiServiceInterface
         //联系上下文
         $this->contextNum = $this->config->get('context_num', 2);
         //代理域名
-        if(!empty($this->config['agency_api'])){
-            $this->baseUrl = $this->config['agency_api'];
+        if(!empty($this->config['openai_agency_api'])){
+            $this->baseUrl = $this->config['openai_agency_api'];
         }
         $this->headers['Content-Type'] = 'application/json';
         $this->headers['Authorization'] = 'Bearer '.$this->apiKey;
@@ -89,7 +89,7 @@ class OpenAiService implements AiServiceInterface
         );
     }
 
-    public function chat(array $params): array
+    public function chat(array $params, ?int $groupId = null): array
     {
 
         $this->baseUrl.='/v1/chat/completions';
@@ -98,14 +98,18 @@ class OpenAiService implements AiServiceInterface
             'messages' => $params['messages'],
             'temperature'   => $this->temperature,
         ];
-        //设置超时时间
-        $options['timeout'] = 100;
-        $response = Requests::post($this->baseUrl, $this->headers,json_encode($data),$options);
-        return $this->getResponseData($response);
 
+        try {
+            //设置超时时间
+            $options['timeout'] = 100;
+            $response = Requests::post($this->baseUrl, $this->headers, json_encode($data), $options);
+            return $this->getResponseData($response);
+        } catch (Exception $re) {
+            throw new AiException('request error', 0, $re);
+        }
     }
 
-    public function chatStream(array $params): array
+    public function chatStream(array $params, ?int $groupId = null): array
     {
 
         $this->baseUrl.='/v1/chat/completions';
@@ -132,7 +136,7 @@ class OpenAiService implements AiServiceInterface
             return strlen($data);
         };
 
-        GptHelper::requestByStream($callback, [
+        $options = [
             CURLOPT_URL => $this->baseUrl,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_SSL_VERIFYPEER => false,
@@ -150,7 +154,18 @@ class OpenAiService implements AiServiceInterface
                 'stream'        => true ,
                 'temperature'   => $this->temperature,
             ])
-        ]);
+        ];
+
+        $preHandler = null;
+        if ($groupId) {
+            $preHandler = function () use ($groupId) {
+                echo 'data: ' . json_encode(['group_id' => $groupId]);
+                ob_flush();
+                flush();
+            };
+        }
+
+        GptHelper::requestByStream($callback, $options, $preHandler);
 
 
         if(true !== $response){
