@@ -8,4 +8,6 @@ vendor/
 
 **/*.env
 
+**/env.php
+
 composer.lock

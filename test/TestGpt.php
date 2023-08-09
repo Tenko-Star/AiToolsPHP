@@ -10,12 +10,9 @@ use Tenko\Ai\Interfaces\CacheInterface;
 class TestGpt extends TestCase
 {
     public function testRequest() {
-        $env = require '.env';
+        $env = require 'env.php';
 
-        AiConfig::init([
-            'gpt_type' => 'open_ai',
-            'api_key' => $env['api_key']
-        ]);
+        AiConfig::init($env);
 
         AiConfig::setCache(new class implements CacheInterface {
 
