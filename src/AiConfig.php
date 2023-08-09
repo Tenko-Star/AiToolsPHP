@@ -51,6 +51,22 @@ class AiConfig implements \ArrayAccess
         if (self::$instance === null) {
             self::$instance = new self($config);
         }
+
+        if (isset($config['logger_class']) && class_exists($config['logger_class'])) {
+            $refLogger = new \ReflectionClass($config['logger_class']);
+            if (in_array(LogInterface::class, $refLogger->getInterfaceNames())) {
+                $obj = $refLogger->newInstance();
+                self::setLogger($obj);
+            }
+        }
+
+        if (isset($config['cache_class']) && class_exists($config['cache_class'])) {
+            $refCache = new \ReflectionClass($config['cache_class']);
+            if (in_array(CacheInterface::class, $refCache->getInterfaceNames())) {
+                $obj = $refCache->newInstance();
+                self::setCache($obj);
+            }
+        }
     }
 
     private function __construct(array $config) {

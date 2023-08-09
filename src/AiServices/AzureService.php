@@ -2,6 +2,7 @@
 
 namespace Tenko\Ai\AiServices;
 
+use Tenko\Ai\Enum\OpenAiEnum;
 use Tenko\Ai\Exception\AiResponseException;
 use Tenko\Ai\Exception\ConfigNotFoundException;
 use Tenko\Ai\Interfaces\AiServiceInterface;
@@ -44,8 +45,8 @@ class AzureService implements AiServiceInterface
         $this->deployments = $config->getOrFail('azure_deployments');
         $this->apiVersion = $config->getOrFail('azure_api_version');
         $this->apiKey = $keyHelper->getKey();
-        $this->model = $config->getOrFail('model');
-        $this->maxSession = $config->getOrFail('context_num');
+        $this->model = $config->get('model', OpenAiEnum::MODEL_GPT_35_TURBO);
+        $this->maxSession = $config->get('context_num', 5);
         $this->isSensitive = $config->get('is_sensitive', 1);
     }
 
