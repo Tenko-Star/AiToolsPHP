@@ -98,7 +98,7 @@ class AzureService implements AiServiceInterface
         $response = true;
         $callback = function ($ch, $data) use (&$content, &$response, &$total) {
             $logger = AiConfig::getLogger();
-            $logger->debug('stream raw data', $data);
+            $logger->debug('stream raw data', ['raw_data' => $data]);
             $result = @json_decode($data);
 
             if (isset($result->error)) {
