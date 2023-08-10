@@ -109,6 +109,11 @@ class AzureService implements AiServiceInterface
                     'json_data' => json_encode($parseData)
                 ]);
                 $content .= $parseData['content'];
+
+                if (str_starts_with($data, 'data: ')) {
+                    $data = substr($data, 6);
+                }
+
                 echo $splitStr . $data;
                 ob_flush();
                 flush();
