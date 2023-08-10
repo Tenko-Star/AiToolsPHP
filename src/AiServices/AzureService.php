@@ -89,14 +89,14 @@ class AzureService implements AiServiceInterface
         return $responseData;
     }
 
-    public function chatStream(array $params, ?int $groupId = null): array
+    public function chatStream(array $params, ?int $groupId = null, string $splitStr = 'data: '): array
     {
         $api = '/deployments/{Deployments}/chat/completions?api-version={ApiVersion}';
         $url = $this->parseUrl($this->baseUri . $api);
 
         $content = '';
         $response = true;
-        $callback = function ($ch, $data) use (&$content, &$response, &$total) {
+        $callback = function ($ch, $data) use (&$content, &$response, &$total, $splitStr) {
             $logger = AiConfig::getLogger();
             $logger->debug('stream raw data', ['raw_data' => $data]);
             $result = @json_decode($data);
@@ -109,7 +109,7 @@ class AzureService implements AiServiceInterface
                     'json_data' => json_encode($parseData)
                 ]);
                 $content .= $parseData['content'];
-                echo $data;
+                echo $splitStr . $data;
                 ob_flush();
                 flush();
             }

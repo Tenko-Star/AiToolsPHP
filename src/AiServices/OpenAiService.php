@@ -109,14 +109,14 @@ class OpenAiService implements AiServiceInterface
         }
     }
 
-    public function chatStream(array $params, ?int $groupId = null): array
+    public function chatStream(array $params, ?int $groupId = null, string $splitStr = 'data: '): array
     {
 
         $this->baseUrl.='/v1/chat/completions';
 
         $content = '';
         $response = true;
-        $callback = function ($ch, $data) use (&$content,&$response,&$total){
+        $callback = function ($ch, $data) use (&$content,&$response,&$total, $splitStr){
             $logger = AiConfig::getLogger();
             $logger->debug('stream raw data', ['raw_data' => $data]);
             $result = @json_decode($data);
@@ -129,7 +129,7 @@ class OpenAiService implements AiServiceInterface
                     'json_data' => json_encode($parseData)
                 ]);
                 $content.= $parseData['content'];
-                echo $data;
+                echo $splitStr . $data;
                 ob_flush();
                 flush();
             }
