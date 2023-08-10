@@ -100,6 +100,11 @@ class AzureService implements AiServiceInterface
             $logger = AiConfig::getLogger();
             $logger->debug('stream raw data', ['raw_data' => $data]);
             $result = @json_decode($data);
+            $dataLen = strlen($data);
+            if ($dataLen === 12 && $data === 'data: [DONE]') {
+                echo 'data: [DONE]';
+                return $dataLen;
+            }
 
             if (isset($result->error)) {
                 $response = $result->error->message;
@@ -118,7 +123,7 @@ class AzureService implements AiServiceInterface
                 ob_flush();
                 flush();
             }
-            return strlen($data);
+            return $dataLen;
         };
 
         $options = [
