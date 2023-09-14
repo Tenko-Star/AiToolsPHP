@@ -23,10 +23,10 @@ abstract class BaseGptConfig
 
     public function setApiKeys(array $apiKeys): BaseGptConfig
     {
-        $this->apiKeys = array_filter(
+        $this->apiKeys = array_values(array_filter(
             $apiKeys,
             fn($key) => is_string($key) && !empty($key) && !str_starts_with($key, '#')
-        );
+        ));
 
         return $this;
     }
