@@ -2,15 +2,19 @@
 
 return [
     // require
-    'api_key' => [
+    'api_key_openai' => [
         '123456',
         '234567',
         '345678'
     ],
-    'gpt_type' => 'azure',
+    'api_key_azure' => [
+        '123456',
+        '234567',
+        '345678'
+    ],
 
     // OpenAI(optional)
-    'agency_api' => '',
+    'openai_agency_api' => '',
 
     // Azure (require)
     'azure_resource_name' => 'test',
@@ -19,10 +23,7 @@ return [
 
     // optional
     'model' => '', // default gpt-3.5-turbo
-    'max_tokens' => 150,
+    'max_length' => 150,
     'temperature' => 0.6,
-    'is_sensitive' => 1,
     'context_num' => 2,
-    'cache_class' => 'path\\to\\Cache',
-    'logger_class' => 'path\\to\\Log',
 ];
