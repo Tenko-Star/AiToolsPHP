@@ -11,3 +11,5 @@ vendor/
 **/env.php
 
 composer.lock
+
+**/*.local*
