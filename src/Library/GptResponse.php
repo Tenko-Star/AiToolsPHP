@@ -10,7 +10,6 @@ final class GptResponse
 
     /**
      * @param string $response
-     * @param int $responseLength
      */
     public function __construct(string $response)
     {
