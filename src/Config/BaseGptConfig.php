@@ -12,8 +12,6 @@ abstract class BaseGptConfig
     #[ExpectedValues(valuesFromClass: OpenAiEnum::class)]
     private string $model = OpenAiEnum::MODEL_GPT_35_TURBO;
 
-    private int $maxLength = 150;
-
     private float $temperature = 0.6;
 
     public function getApiKeys(): array
@@ -42,17 +40,6 @@ abstract class BaseGptConfig
     ): BaseGptConfig
     {
         $this->model = $model;
-        return $this;
-    }
-
-    public function getMaxLength(): int
-    {
-        return $this->maxLength;
-    }
-
-    public function setMaxLength(int $maxLength): BaseGptConfig
-    {
-        $this->maxLength = $maxLength;
         return $this;
     }
 
